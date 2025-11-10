@@ -11,6 +11,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { store, persistor } from '@/store';
 import { queryClient } from '@/config/queryClient';
 import '../global.css';
+import React from 'react';
 
 export default function RootLayout() {
   return (

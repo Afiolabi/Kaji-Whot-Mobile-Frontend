@@ -1,4 +1,4 @@
-import Daily, { DailyCall, DailyParticipant, DailyEventObject } from '@dailyco/react-native-daily-js';
+import Daily, { DailyCall, DailyParticipant, DailyEventObject } from '@daily-co/react-native-daily-js';
 import { store } from '@store/index';
 import { 
   setConnected, 

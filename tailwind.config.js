@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./App.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
     "./src/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
@@ -67,6 +68,31 @@ module.exports = {
       boxShadow: {
         card: "0 2px 8px rgba(0, 0, 0, 0.12)",
         "card-hover": "0 4px 16px rgba(0, 0, 0, 0.18)",
+      },
+      animation: {
+        'turn-pulse': 'turn-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'card-flip': 'card-flip 0.6s ease-in-out',
+        'slide-up': 'slide-up 0.3s ease-out',
+      },
+      keyframes: {
+        'turn-pulse': {
+          '0%, 100%': { 
+            borderColor: '#8b51f5',
+            boxShadow: '0 0 0 0 rgba(139, 81, 245, 0.7)' 
+          },
+          '50%': { 
+            borderColor: '#c238eb',
+            boxShadow: '0 0 0 10px rgba(139, 81, 245, 0)' 
+          },
+        },
+        'card-flip': {
+          '0%': { transform: 'rotateY(0deg)' },
+          '100%': { transform: 'rotateY(180deg)' },
+        },
+        'slide-up': {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
       },
     },
   },

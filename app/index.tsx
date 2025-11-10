@@ -3,6 +3,7 @@ import { Redirect } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { View, ActivityIndicator } from 'react-native';
 import { RootState } from '@/store';
+import React from 'react';
 
 export default function Index() {
   const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
