@@ -1,10 +1,14 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }]],
+    presets: [['babel-preset-expo'],  'nativewind/babel',],
     plugins: [
+      // ✅ NativeWind plugin
+     
+
+      // ✅ Module resolver plugin (standalone entry)
       [
-        'module-resolver','nativewind/babel',
+        'module-resolver',
         {
           root: ['./'],
           alias: {
@@ -21,7 +25,12 @@ module.exports = function (api) {
           },
         },
       ],
-      'react-native-reanimated/plugin', // Must be last
+
+      // // ✅ Expo Router plugin (optional but recommended if you use expo-router)
+      // require.resolve('expo-router/babel'),
+
+      // ✅ Reanimated plugin must always be last
+      'react-native-reanimated/plugin',
     ],
   };
 };

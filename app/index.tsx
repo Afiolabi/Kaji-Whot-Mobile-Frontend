@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Redirect } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { View, ActivityIndicator } from 'react-native';

@@ -1,30 +1,35 @@
 {
   "expo": {
     "name": "Kaji Whot",
-    "slug": "kaji-whot-mobile",
+    "slug": "kaji-whot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "kajiwhot",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#FF385C"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.kajiwhot.mobile",
       "infoPlist": {
         "NSCameraUsageDescription": "Kaji Whot needs access to your camera for video calls during games.",
         "NSMicrophoneUsageDescription": "Kaji Whot needs access to your microphone for voice chat during games.",
-        "UIBackgroundModes": ["audio", "voip"]
+        "UIBackgroundModes": [
+          "audio",
+          "voip"
+        ]
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FF385C"
       },
       "package": "com.kajiwhot.mobile",
@@ -33,11 +38,13 @@
         "RECORD_AUDIO",
         "MODIFY_AUDIO_SETTINGS",
         "ACCESS_NETWORK_STATE",
-        "INTERNET"
+        "INTERNET",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./src/assets/icon.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -47,8 +54,7 @@
         {
           "microphonePermission": "Allow Kaji Whot to access your microphone for voice chat during games."
         }
-      ],
-      "react-native-reanimated"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -58,8 +64,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "228f3127-5652-4b94-ab7e-7f3879cb48d1"
       }
-    }
+    },
+    "owner": "kaji-whot"
   }
 }
