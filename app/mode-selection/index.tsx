@@ -54,19 +54,19 @@ export default function ModeSelection() {
   };
 
   const handleOfflineMode = () => {
-    router.push('/(tabs)/mode-selection/offline');
+    router.push('/mode-selection/offline');
   };
 
   const handleFreeMode = () => {
-    router.push('/(tabs)/mode-selection/free');
+    router.push('/mode-selection/free');
   };
 
   const handleRankMode = () => {
-    router.push('/(tabs)/mode-selection/rank');
+    router.push('/mode-selection/rank');
   };
 
   const handleCelebrityMode = () => {
-    router.push('/(tabs)/mode-selection/celebrity');
+    router.push('/mode-selection/celebrity');
   };
 
   return (

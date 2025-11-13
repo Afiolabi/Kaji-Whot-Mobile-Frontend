@@ -64,7 +64,7 @@ export default function Landing() {
 
     // Navigate after a short delay to show animation
     setTimeout(() => {
-      router.push('/(tabs)/mode-selection');
+      router.push('/mode-selection');
     }, 200);
   };
 

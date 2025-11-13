@@ -146,30 +146,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="play"
-        options={{
-          href: null, // Hide from tab bar, accessed via landing page
-        }}
-      />
-      <Tabs.Screen
-        name="mode-selection"
-        options={{
-          href: null, // Hide from tab bar
-        }}
-      />
-      <Tabs.Screen
-        name="wallet"
-        options={{
-          href: null, // Hide from tab bar, accessed via landing page
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          href: null, // Hide from tab bar, accessed via landing page
-        }}
-      /> */}
+      
       <Tabs.Screen
         name="tasks"
         options={{
