@@ -55,17 +55,20 @@ export default function Landing() {
     };
   });
 
-
-  const handlePlayPress = () => {
+const handlePressIn = () => {
     // Stop idle animation and animate button press
     scale.value = withSpring(0.85, { damping: 15, stiffness: 300 }, () => {
-      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+      // scale.value = withSpring(1, { damping: 15, stiffness: 300 });
     });
 
+    
+  };
+  const handlePlayPress = () => {
+
     // Navigate after a short delay to show animation
-    setTimeout(() => {
+    // setTimeout(() => {
       router.push('/mode-selection');
-    }, 200);
+    // }, 200);
   };
 
   return (
@@ -73,7 +76,7 @@ export default function Landing() {
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
-      <Header  hasNotification/>
+      <Header hasNotification />
 
       {/* Main Content */}
       <View className="flex-1 items-center justify-center px-8">
@@ -89,7 +92,7 @@ export default function Landing() {
         </Text>
 
         {/* Play Button */}
-        <Pressable onPress={handlePlayPress} className="items-center">
+        <Pressable onPressIn={handlePressIn} onPressOut={handlePlayPress} className="items-center">
           <Animated.View style={animatedPlayButton}>
             <PlayIcon />
           </Animated.View>
@@ -97,7 +100,7 @@ export default function Landing() {
       </View>
 
       {/* Bottom spacing for tab bar */}
-      <View className="h-4" />
+      {/* <View className="h-4" /> */}
     </SafeAreaView>
   );
 }

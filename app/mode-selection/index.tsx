@@ -87,7 +87,7 @@ export default function ModeSelection() {
               title="Offline (Bot)"
               variant="primary"
               icon={
-                <Svg width={56} height={56} viewBox="0 0 24 24" fill="none">
+                <Svg width={36} height={36} viewBox="0 0 24 24" fill="none">
                   <Rect x="5" y="7" width="14" height="10" rx="2" stroke="#000" strokeWidth="1.5" />
                   <Circle cx="10" cy="11" r="1" fill="#000" />
                   <Circle cx="14" cy="11" r="1" fill="#000" />

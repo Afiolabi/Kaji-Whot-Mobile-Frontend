@@ -53,7 +53,7 @@ const BellIcon = ({ hasNotification }: { hasNotification?: boolean }) => (
       />
     </Svg>
     {hasNotification && (
-      <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-error rounded-full" />
+      <View className="absolute top-[-0.5] right-1 w-2.5 h-2.5 bg-error rounded-full" />
     )}
   </View>
 );
@@ -92,12 +92,12 @@ export default function Header({
     });
 
     setTimeout(() => {
-      router.push('/(tabs)/wallet');
+      router.push('/settings/wallet');
     }, 150);
   };
 
   const handleProfilePress = () => {
-    router.push('/(tabs)/profile');
+    router.push('/(tabs)/settings/profile');
   };
 
   const handleNotificationPress = () => {
