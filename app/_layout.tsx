@@ -11,45 +11,47 @@ import { View, ActivityIndicator } from 'react-native';
 import { store, persistor } from '@/store';
 import { queryClient } from '@/config/queryClient';
 import '../global.css';
-import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider store={store}>
-        <PersistGate
-          loading={
-            <View className="flex-1 items-center justify-center bg-white">
-              <ActivityIndicator size="large" color="#FF385C" />
-            </View>
-          }
-          persistor={persistor}
-        >
-          <QueryClientProvider client={queryClient}>
-            <KeyboardProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  contentStyle: { backgroundColor: '#FFFFFF' },
-                }}
-              >
-                <Stack.Screen name="index" />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen 
-                  name="(game)" 
-                  options={{ 
+    <SafeAreaProvider style={{ marginTop: 30 }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Provider store={store}>
+          <PersistGate
+            loading={
+              <View className="flex-1 items-center justify-center bg-white">
+                <ActivityIndicator size="large" color="#FF385C" />
+              </View>
+            }
+            persistor={persistor}
+          >
+            <QueryClientProvider client={queryClient}>
+              <KeyboardProvider>
+                <Stack
+                  screenOptions={{
                     headerShown: false,
-                    presentation: 'fullScreenModal',
-                  }} 
-                />
-              </Stack>
-              <StatusBar style="auto" />
-            </KeyboardProvider>
-          </QueryClientProvider>
-        </PersistGate>
-      </Provider>
-    </GestureHandlerRootView>
+                    animation: 'slide_from_right',
+                    contentStyle: { backgroundColor: '#FFFFFF' },
+                  }}
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(game)"
+                    options={{
+                      headerShown: false,
+                      presentation: 'fullScreenModal',
+                    }}
+                  />
+                </Stack>
+                <StatusBar style="auto" />
+              </KeyboardProvider>
+            </QueryClientProvider>
+          </PersistGate>
+        </Provider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
