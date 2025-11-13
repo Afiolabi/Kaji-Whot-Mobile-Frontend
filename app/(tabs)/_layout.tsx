@@ -1,3 +1,4 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
@@ -125,9 +126,9 @@ export default function TabsLayout() {
           backgroundColor: '#fff',
           borderTopWidth: 1,
           borderTopColor: '#EBEBEB',
-          height: 60,
-          // paddingTop: 8,
-          // paddingBottom: 20,
+          height: 80,
+          paddingTop: 8,
+          paddingBottom: 20,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -145,10 +146,16 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="play"
         options={{
           href: null, // Hide from tab bar, accessed via landing page
+        }}
+      />
+      <Tabs.Screen
+        name="mode-selection"
+        options={{
+          href: null, // Hide from tab bar
         }}
       />
       <Tabs.Screen
@@ -162,7 +169,7 @@ export default function TabsLayout() {
         options={{
           href: null, // Hide from tab bar, accessed via landing page
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="tasks"
         options={{
