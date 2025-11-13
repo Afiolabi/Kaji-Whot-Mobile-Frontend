@@ -16,8 +16,8 @@ kaji-whot-mobile/
 │   │
 │   ├── (tabs)/                         # Main app tabs
 │   │   ├── _layout.tsx                 # Tab navigation
-│   │   ├── landing.tsx                 # Landing page
-│   │   ├── play/                       # Play screens
+│   │   ├── landing.tsx                 # Landing page //Play
+│   │   ├── mode-selection/                       # mode-selection screens
 │   │   │   ├── index.tsx               # Mode selection
 │   │   │   ├── offline.tsx             # Bot game setup
 │   │   │   ├── free.tsx                # Free room browser
