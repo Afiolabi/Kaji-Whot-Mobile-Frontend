@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { RelativePathString, useRouter } from 'expo-router';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
 import Header from '@components/common/Header';
 
@@ -20,23 +20,19 @@ interface ModeButtonProps {
   title: string;
   icon: React.ReactNode;
   onPress: () => void;
-  variant?: 'default' | 'primary';
+  isSelected?: boolean;
 }
 
-const ModeButton = ({ title, icon, onPress, variant = 'default' }: ModeButtonProps) => {
-  const isPrimary = variant === 'primary';
-
+const ModeButton = ({ title, icon, onPress, isSelected = false }: ModeButtonProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
       className={`
         flex-1 aspect-square rounded-3xl items-center justify-center
-        ${isPrimary ? 'border-2 border-primary' : 'border-2 border-neutral-900'}
+        border-2 ${isSelected ? 'border-primary' : 'border-neutral-300'}
       `}
-      style={{
-        maxHeight: 100,
-      }}
+      style={{ maxHeight: 100 }}
     >
       <View className="items-center">
         {icon}
@@ -48,44 +44,26 @@ const ModeButton = ({ title, icon, onPress, variant = 'default' }: ModeButtonPro
 
 export default function ModeSelection() {
   const router = useRouter();
+  const [selectedMode, setSelectedMode] = useState<string | null>(null);
 
-  const handleBackPress = () => {
-    router.back();
+  const handleSelect = (mode: string, route: string) => {
+    setSelectedMode(mode);
+    router.push(route as unknown as RelativePathString);
   };
 
-  const handleOfflineMode = () => {
-    router.push('/mode-selection/offline');
-  };
-
-  const handleFreeMode = () => {
-    router.push('/mode-selection/free');
-  };
-
-  const handleRankMode = () => {
-    router.push('/mode-selection/rank');
-  };
-
-  const handleCelebrityMode = () => {
-    router.push('/mode-selection/celebrity');
-  };
+  const handleBackPress = () => router.back();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" />
+      <Header hasNotification />
 
-      {/* Header */}
-      <Header  hasNotification/>
-
-      {/* Main Content */}
       <View className="flex-1 px-8 pt-8 justify-center">
-        {/* Mode Grid - 2x2 */}
-        <View className=" gap-4 ">
+        <View className="gap-4">
           {/* Top Row */}
-          <View className="flex-row gap-4 ">
-            {/* Offline (Bot) */}
+          <View className="flex-row gap-4">
             <ModeButton
               title="Offline (Bot)"
-              variant="primary"
               icon={
                 <Svg width={36} height={36} viewBox="0 0 24 24" fill="none">
                   <Rect x="5" y="7" width="14" height="10" rx="2" stroke="#000" strokeWidth="1.5" />
@@ -94,10 +72,10 @@ export default function ModeSelection() {
                   <Path d="M9 14h6" stroke="#000" strokeWidth="1.5" strokeLinecap="round" />
                 </Svg>
               }
-              onPress={handleOfflineMode}
+              isSelected={selectedMode === 'offline'}
+              onPress={() => handleSelect('offline', '/mode-selection/offline')}
             />
 
-            {/* Free Room */}
             <ModeButton
               title="Free room"
               icon={
@@ -111,13 +89,13 @@ export default function ModeSelection() {
                   />
                 </Svg>
               }
-              onPress={handleFreeMode}
+              isSelected={selectedMode === 'free'}
+              onPress={() => handleSelect('free', '/mode-selection/free')}
             />
           </View>
 
           {/* Bottom Row */}
           <View className="flex-row gap-4">
-            {/* Rank Room */}
             <ModeButton
               title="Rank room"
               icon={
@@ -131,10 +109,10 @@ export default function ModeSelection() {
                   <Circle cx="12" cy="11" r="2" stroke="#000" strokeWidth="1.5" />
                 </Svg>
               }
-              onPress={handleRankMode}
+              isSelected={selectedMode === 'rank'}
+              onPress={() => handleSelect('rank', '/mode-selection/rank')}
             />
 
-            {/* Celebrity Room */}
             <ModeButton
               title="Celebrity room"
               icon={
@@ -149,18 +127,15 @@ export default function ModeSelection() {
                   />
                 </Svg>
               }
-              onPress={handleCelebrityMode}
+              isSelected={selectedMode === 'celebrity'}
+              onPress={() => handleSelect('celebrity', '/mode-selection/celebrity')}
             />
           </View>
         </View>
 
-        {/* Back Button - Bottom Right */}
+        {/* Back Button */}
         <View className="items-end top-10">
-          <TouchableOpacity
-            onPress={handleBackPress}
-            activeOpacity={0.7}
-            className="active:opacity-50"
-          >
+          <TouchableOpacity onPress={handleBackPress} activeOpacity={0.7}>
             <BackIcon />
           </TouchableOpacity>
         </View>
