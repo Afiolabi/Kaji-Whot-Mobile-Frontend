@@ -15,6 +15,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 import { RootState } from '@/store';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { CoinsIcon, WalletIcon } from '@/components/common/Header';
+import { useGameActions } from '@/hooks/useSocket';
 
 // Icons
 const BackIcon = () => (

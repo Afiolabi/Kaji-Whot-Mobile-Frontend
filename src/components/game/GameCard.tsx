@@ -79,7 +79,7 @@ const GameCard: React.FC<GameCardProps> = ({
       <View className="flex-1 bg-white rounded-lg border-2 border-neutral-900 items-center justify-center p-2">
         {/* Card Number (Top Left) */}
         <Text className={`absolute top-1 left-1 ${text} font-bold`}>
-          {card.number === 'whot' ? 'W' : card.number}
+          {card.number === 20 ? 'W' : card.number}
         </Text>
 
         {/* Small shape icon (Top Left) */}
@@ -93,7 +93,7 @@ const GameCard: React.FC<GameCardProps> = ({
         {/* Card Number (Bottom Right - Rotated) */}
         <View className="absolute bottom-1 right-1 rotate-180">
           <Text className={`${text} font-bold`}>
-            {card.number === 'whot' ? 'W' : card.number}
+            {card.number === 20 ? 'W' : card.number}
           </Text>
         </View>
 
