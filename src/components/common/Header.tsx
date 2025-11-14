@@ -8,7 +8,7 @@ import Avatar from '@components/common/Avatar';
 import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
 
 // Icons
-const WalletIcon = () => (
+export const WalletIcon = () => (
   <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
     <Path
       d="M21 8H3M21 8V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V8M21 8V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V8"
@@ -21,7 +21,7 @@ const WalletIcon = () => (
   </Svg>
 );
 
-const CoinsIcon = () => (
+export const CoinsIcon = () => (
   <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
     {/* Top coin */}
     <Ellipse cx="12" cy="5" rx="7" ry="3" stroke="#000" strokeWidth="1.5" fill="none" />
@@ -91,9 +91,7 @@ export default function Header({
       walletScale.value = withSpring(1, { damping: 15, stiffness: 300 });
     });
 
-    setTimeout(() => {
-      router.push('/settings/wallet');
-    }, 150);
+    router.push('/settings/wallet');
   };
 
   const handleProfilePress = () => {

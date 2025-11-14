@@ -2,12 +2,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type GameMode = 'free' | 'rank' | 'celebrity' | 'offline';
 export type Direction = 'clockwise' | 'counterclockwise';
+export type CardNumber = 1 | 2 | 3 | 4 | 5 | 7 | 8 | 10 | 11 | 12 | 13 | 14 | 20;
+export type CardShape = 'circle' | 'triangle' | 'cross' | 'square' | 'star';
 
 export interface Card {
   id: string;
-  shape: 'circle' | 'triangle' | 'cross' | 'square' | 'star';
-  number: number | 'whot';
+  shape: CardShape | 'whot';
+  number?: CardNumber;
   isSpecial?: boolean; // pick2, hold-on, general-market, etc.
+ imageUrl: string;
 }
 
 export interface Player {
