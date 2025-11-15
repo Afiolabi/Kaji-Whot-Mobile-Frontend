@@ -30,6 +30,11 @@ const BackIcon = () => (
   </Svg>
 );
 import { CardNumber, CardShape, Card as CardType } from '@/types/card.types';
+import PlayerGrid from '@/components/game/PlayerGrid';
+import { useGameActions, useSocket } from '@/hooks/useSocket';
+import { useWebRTC } from '@/hooks/useWebRTC';
+import { formatTime } from '@/utils/formatters';
+import { playCard } from '@/store/slices/gameSlice';
 const TimerIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
     <Circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" />
@@ -123,87 +128,87 @@ interface PlayerSlotProps {
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
 
-const PlayerSlot = ({ player, isActive, position }: PlayerSlotProps) => {
-  const positionClasses = {
-    'top-left': 'absolute top-2 left-2',
-    'top-right': 'absolute top-2 right-2',
-    'bottom-left': 'absolute bottom-2 left-2',
-    'bottom-right': 'absolute bottom-2 right-2',
-  };
+// const PlayerSlot = ({ player, isActive, position }: PlayerSlotProps) => {
+//   const positionClasses = {
+//     'top-left': 'absolute top-2 left-2',
+//     'top-right': 'absolute top-2 right-2',
+//     'bottom-left': 'absolute bottom-2 left-2',
+//     'bottom-right': 'absolute bottom-2 right-2',
+//   };
 
-  return (
-    <View className={positionClasses[position]}>
-      <View
-        className={`w-28 h-36 rounded-xl overflow-hidden ${
-          isActive ? 'border-4 border-primary' : 'border-2 border-neutral-300'
-        }`}
-      >
-        {/* Video/Avatar Area */}
-        <View className="flex-1 bg-neutral-800 items-center justify-center">
-          {player.avatar ? (
-            <Image source={{ uri: player.avatar }} className="w-full h-full" resizeMode="cover" />
-          ) : (
-            <Svg width={48} height={48} viewBox="0 0 24 24" fill="none">
-              <Path
-                d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-                stroke="#B0B0B0"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <Path
-                d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
-                stroke="#B0B0B0"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </Svg>
-          )}
-        </View>
+//   return (
+//     <View className={positionClasses[position]}>
+//       <View
+//         className={`w-28 h-36 rounded-xl overflow-hidden ${
+//           isActive ? 'border-4 border-primary' : 'border-2 border-neutral-300'
+//         }`}
+//       >
+//         {/* Video/Avatar Area */}
+//         <View className="flex-1 bg-neutral-800 items-center justify-center">
+//           {player.avatar ? (
+//             <Image source={{ uri: player.avatar }} className="w-full h-full" resizeMode="cover" />
+//           ) : (
+//             <Svg width={48} height={48} viewBox="0 0 24 24" fill="none">
+//               <Path
+//                 d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+//                 stroke="#B0B0B0"
+//                 strokeWidth="2"
+//                 strokeLinecap="round"
+//                 strokeLinejoin="round"
+//               />
+//               <Path
+//                 d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+//                 stroke="#B0B0B0"
+//                 strokeWidth="2"
+//                 strokeLinecap="round"
+//                 strokeLinejoin="round"
+//               />
+//             </Svg>
+//           )}
+//         </View>
 
-        {/* Player Info Overlay */}
-        <View className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
-          <Text className="text-white text-xs font-semibold" numberOfLines={1}>
-            {player.username}
-          </Text>
-        </View>
+//         {/* Player Info Overlay */}
+//         <View className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+//           <Text className="text-white text-xs font-semibold" numberOfLines={1}>
+//             {player.username}
+//           </Text>
+//         </View>
 
-        {/* Card Count Badge */}
-        <View className="absolute top-1 right-1">
-          <View
-            className={`px-2 py-0.5 rounded-full ${
-              player.isLastCard ? 'bg-error' : 'bg-neutral-800'
-            }`}
-          >
-            <Text className="text-white text-xs font-bold">{player.cardCount}</Text>
-          </View>
-        </View>
+//         {/* Card Count Badge */}
+//         <View className="absolute top-1 right-1">
+//           <View
+//             className={`px-2 py-0.5 rounded-full ${
+//               player.isLastCard ? 'bg-error' : 'bg-neutral-800'
+//             }`}
+//           >
+//             <Text className="text-white text-xs font-bold">{player.cardCount}</Text>
+//           </View>
+//         </View>
 
-        {/* Last Card Warning */}
-        {player.isLastCard && (
-          <View className="absolute top-1 left-1">
-            <Text className="text-error text-[10px] font-bold">Last Card</Text>
-          </View>
-        )}
+//         {/* Last Card Warning */}
+//         {player.isLastCard && (
+//           <View className="absolute top-1 left-1">
+//             <Text className="text-error text-[10px] font-bold">Last Card</Text>
+//           </View>
+//         )}
 
-        {/* Audio/Video Controls */}
-        <View className="absolute bottom-8 left-1 flex-row gap-1">
-          {player.audioMuted && (
-            <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
-              <MicIcon muted={true} />
-            </View>
-          )}
-          {player.videoDisabled && (
-            <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
-              <VideoIcon disabled={true} />
-            </View>
-          )}
-        </View>
-      </View>
-    </View>
-  );
-};
+//         {/* Audio/Video Controls */}
+//         <View className="absolute bottom-8 left-1 flex-row gap-1">
+//           {player.audioMuted && (
+//             <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
+//               <MicIcon muted={true} />
+//             </View>
+//           )}
+//           {player.videoDisabled && (
+//             <View className="w-6 h-6 bg-white rounded-full items-center justify-center">
+//               <VideoIcon disabled={true} />
+//             </View>
+//           )}
+//         </View>
+//       </View>
+//     </View>
+//   );
+// };
 
 // Game Card Component
 interface GameCardProps {
@@ -265,18 +270,23 @@ export default function GameRoom() {
   const router = useRouter();
   const { roomId } = useLocalSearchParams();
   const user = useSelector((state: RootState) => state.user.user);
+  const { isConnected } = useSocket();
+
+  const gameState = useSelector((state: RootState) => state.game);
+  // Initialize WebRTC
+  useWebRTC(roomId as string);
 
   // Mock game state (replace with real Redux state)
   const [gameTimer, setGameTimer] = useState(195); // 03:15 in seconds
   const [activeTab, setActiveTab] = useState<'cards' | 'chat' | 'menu'>('cards');
 
   // Mock players
-  const players = [
-    { username: 'Bot1', cardCount: 0, isLastCard: true, audioMuted: false, videoDisabled: false },
-    { username: 'Bot2', cardCount: 14, isLastCard: false, audioMuted: false, videoDisabled: false },
-    { username: 'Bot3', cardCount: 5, isLastCard: false, audioMuted: false, videoDisabled: false },
-    { username: 'Me', cardCount: 3, isLastCard: false, audioMuted: true, videoDisabled: true },
-  ];
+  // const players = [
+  //   { username: 'Bot1', cardCount: 0, isLastCard: true, audioMuted: false, videoDisabled: false },
+  //   { username: 'Bot2', cardCount: 14, isLastCard: false, audioMuted: false, videoDisabled: false },
+  //   { username: 'Bot3', cardCount: 5, isLastCard: false, audioMuted: false, videoDisabled: false },
+  //   { username: 'Me', cardCount: 3, isLastCard: false, audioMuted: true, videoDisabled: true },
+  // ];
 
   const myCards: {
     id: string;
@@ -303,19 +313,10 @@ export default function GameRoom() {
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const handleBack = () => {
     router.back();
   };
 
-  function handleCardPlay(): void {
-    throw new Error('Function not implemented.');
-  }
 
   const balance = user?.balance || 500;
   const coins = 2000; // Mock coins data
@@ -336,7 +337,7 @@ export default function GameRoom() {
     router.push('/settings/wallet');
   };
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
-  // const { playCard } = useGameActions();
+  const { playCard } = useGameActions();
 
   const isMyTurn = false;
   const canPlayCard = false;
@@ -346,7 +347,7 @@ export default function GameRoom() {
 
     if (selectedCard?.id === card.id) {
       // Play the selected card
-      // playCard(card.id);
+      playCard(card.id);
       setSelectedCard(null);
     } else {
       // Select the card
@@ -386,15 +387,20 @@ export default function GameRoom() {
       </View>
 
       {/* Main Game Area */}
-      <View className="flex-1 overflow-hidden">
+      <View className="flex-1 flex overflow-hidden">
         <View className="flex-1 flex flex-col">
           {/* Players Grid */}
-          <View className="relative h-[50%] bg-neutral-800  mt-2">
+          <PlayerGrid
+            players={gameState.players}
+            currentTurn={gameState.currentTurn}
+            myId={user.id}
+          />
+          {/* <View className="relative h-[50%] bg-neutral-800  mt-2">
             <PlayerSlot player={players[0]} isActive={true} position="top-left" />
             <PlayerSlot player={players[1]} isActive={false} position="top-right" />
             <PlayerSlot player={players[2]} isActive={false} position="bottom-left" />
             <PlayerSlot player={players[3]} isActive={false} position="bottom-right" />
-          </View>
+          </View> */}
 
           {/* Center Playing Area */}
           <View className="flex-1 items-center justify-center px-4 py-4">

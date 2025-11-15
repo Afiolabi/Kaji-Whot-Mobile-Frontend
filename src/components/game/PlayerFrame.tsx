@@ -55,6 +55,7 @@ const PlayerFrame: React.FC<PlayerFrameProps> = ({ player, isActive, isMe }) => 
           <Text className="text-red-500 text-xs font-bold animate-pulse">
             Last card
           </Text>
+          
         </View>
       )}
 

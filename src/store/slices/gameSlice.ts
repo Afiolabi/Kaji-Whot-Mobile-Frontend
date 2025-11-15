@@ -1,44 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { GameState, Player, Observer, TurnDirection } from '@/types/game.types';
+import { Card, PlayedCard } from '@/types/card.types';
+import { GameMode } from '@/types/user.types';
 
-export type GameMode = 'free' | 'rank' | 'celebrity' | 'offline';
-export type Direction = 'clockwise' | 'counterclockwise';
-export type CardNumber = 1 | 2 | 3 | 4 | 5 | 7 | 8 | 10 | 11 | 12 | 13 | 14 | 20;
-export type CardShape = 'circle' | 'triangle' | 'cross' | 'square' | 'star';
-
-export interface Card {
-  id: string;
-  shape: CardShape | 'whot';
-  number?: CardNumber;
-  isSpecial?: boolean; // pick2, hold-on, general-market, etc.
- imageUrl: string;
-}
-
-export interface Player {
-  id: string;
-  username: string;
-  avatar: string;
-  hand: Card[]; // Only populated for current user
-  cardCount: number;
-  isDisconnected: boolean;
-  isLastCard: boolean;
-  videoStream: any; // MediaStream type
-  audioMuted: boolean;
-  videoDisabled: boolean;
-  position: number; // 0-3 for 4 players
-  hasPlayedTurn?: boolean;
-  missedTurns?: number;
-}
-
-export interface GameState {
-  market: Card[];
-  playedCards: Card[];
-  currentTurn: string; // player id
-  direction: Direction;
-  turnTimer: number;
-  gameTimer: number;
-  lastPlayedCard: Card | null;
-  activeShape: string | null; // For whot card declarations
-}
+// export type GameMode = 'free' | 'rank' | 'celebrity' | 'offline';
+// export type Direction = 'clockwise' | 'counterclockwise';
 
 export interface GameResults {
   winner: string; // userId
@@ -94,8 +60,11 @@ const gameSlice = createSlice({
     updatePlayers: (state, action: PayloadAction<Player[]>) => {
       state.players = action.payload;
     },
-    updatePlayer: (state, action: PayloadAction<{ playerId: string; updates: Partial<Player> }>) => {
-      const playerIndex = state.players.findIndex(p => p.id === action.payload.playerId);
+    updatePlayer: (
+      state,
+      action: PayloadAction<{ playerId: string; updates: Partial<Player> }>
+    ) => {
+      const playerIndex = state.players.findIndex((p) => p.id === action.payload.playerId);
       if (playerIndex !== -1) {
         state.players[playerIndex] = { ...state.players[playerIndex], ...action.payload.updates };
       }
@@ -106,8 +75,11 @@ const gameSlice = createSlice({
         state.gameState.lastPlayedCard = action.payload;
       }
     },
-    drawCards: (state, action: PayloadAction<{ playerId: string; count: number; cards?: Card[] }>) => {
-      const player = state.players.find(p => p.id === action.payload.playerId);
+    drawCards: (
+      state,
+      action: PayloadAction<{ playerId: string; count: number; cards?: Card[] }>
+    ) => {
+      const player = state.players.find((p) => p.id === action.payload.playerId);
       if (player) {
         if (action.payload.cards) {
           player.hand.push(...action.payload.cards);
@@ -131,7 +103,7 @@ const gameSlice = createSlice({
         state.gameState.gameTimer = action.payload;
       }
     },
-    setDirection: (state, action: PayloadAction<Direction>) => {
+    setDirection: (state, action: PayloadAction<TurnDirection>) => {
       if (state.gameState) {
         state.gameState.direction = action.payload;
       }
@@ -142,13 +114,13 @@ const gameSlice = createSlice({
       }
     },
     playerDisconnected: (state, action: PayloadAction<string>) => {
-      const player = state.players.find(p => p.id === action.payload);
+      const player = state.players.find((p) => p.id === action.payload);
       if (player) {
         player.isDisconnected = true;
       }
     },
     playerReconnected: (state, action: PayloadAction<string>) => {
-      const player = state.players.find(p => p.id === action.payload);
+      const player = state.players.find((p) => p.id === action.payload);
       if (player) {
         player.isDisconnected = false;
         player.missedTurns = 0;
