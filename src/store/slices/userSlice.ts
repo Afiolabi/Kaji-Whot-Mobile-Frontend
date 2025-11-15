@@ -22,6 +22,7 @@ interface User {
   email: string;
   avatar: string | null;
   balance: number;
+  coins: number;
   rank: UserRank;
   isCelebrity: boolean;
   stats: UserStats;
@@ -43,6 +44,7 @@ const initialState: UserState = {
     email: '',
     avatar: '',
     balance: 0,
+    coins: 0,
     rank: 'amateur',
     isCelebrity: false,
     stats: {

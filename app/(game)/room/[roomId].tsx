@@ -319,7 +319,7 @@ export default function GameRoom() {
 
 
   const balance = user?.balance || 500;
-  const coins = 2000; // Mock coins data
+  const coins = user?.coins || 2000; // Mock coins data
 
   const walletScale = useSharedValue(1);
 
