@@ -10,7 +10,6 @@ import {
   Pressable,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useSelector } from 'react-redux';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { RootState } from '@/store';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -34,7 +33,8 @@ import PlayerGrid from '@/components/game/PlayerGrid';
 import { useGameActions, useSocket } from '@/hooks/useSocket';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { formatTime } from '@/utils/formatters';
-import { playCard } from '@/store/slices/gameSlice';
+import { useAppSelector } from '@/store/hooks';
+// import { playCard } from '@/store/slices/gameSlice';
 const TimerIcon = () => (
   <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
     <Circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" />
@@ -269,10 +269,10 @@ const GameCard = ({ card, size = 'md', onPress, selected, disabled = false }: Ga
 export default function GameRoom() {
   const router = useRouter();
   const { roomId } = useLocalSearchParams();
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state: RootState) => state.user.user);
   const { isConnected } = useSocket();
 
-  const gameState = useSelector((state: RootState) => state.game);
+  const gameState = useAppSelector((state: RootState) => state.game);
   // Initialize WebRTC
   useWebRTC(roomId as string);
 
@@ -393,7 +393,7 @@ export default function GameRoom() {
           <PlayerGrid
             players={gameState.players}
             currentTurn={gameState.currentTurn}
-            myId={user.id}
+            myId={user ? user.id : ''}
           />
           {/* <View className="relative h-[50%] bg-neutral-800  mt-2">
             <PlayerSlot player={players[0]} isActive={true} position="top-left" />

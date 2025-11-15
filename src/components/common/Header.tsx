@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { RootState } from '@/store';
 import Avatar from '@components/common/Avatar';
 import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
+import { useAppSelector } from '@/store/hooks';
 
 // Icons
 export const WalletIcon = () => (
@@ -72,7 +72,7 @@ export default function Header({
   hasNotification = false,
 }: HeaderProps) {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state: RootState) => state.user.user);
 
   const balance = user?.balance || 500;
   const coins = 2000; // Mock coins data

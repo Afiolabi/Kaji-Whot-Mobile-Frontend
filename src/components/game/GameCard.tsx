@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Svg, { Path, Circle, Rect, Polygon } from 'react-native-svg';
-import { Card } from '@/store/slices/gameSlice';
+import { Card } from '@/types/card.types';
 
 interface GameCardProps {
   card: Card;

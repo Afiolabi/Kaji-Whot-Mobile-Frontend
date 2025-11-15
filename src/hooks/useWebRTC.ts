@@ -1,15 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 // import { dailyClient } from '@/services/webrtc/dailyClient';
 import { setConnectionStatus, setRoomUrl, setAudioEnabled, setVideoEnabled } from '@/services/webrtc/webrtcSlice';
 import { dailyClient } from '@/services/webrtc/dailyClient';
+
 
 export const useWebRTC = (roomId: string | null) => {
   const dispatch = useAppDispatch();
   const { localStream, remoteStreams, isConnected, audioEnabled, videoEnabled } = useAppSelector(
     (state) => state.webrtc
   );
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.user);
   const hasJoined = useRef(false);
 
   useEffect(() => {
