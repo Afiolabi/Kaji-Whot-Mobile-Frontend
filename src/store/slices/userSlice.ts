@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type UserRank = 'regular' | 'celebrity';
+export type UserRank = 'amateur' | 'whot-master' | 'whot-lord' | 'celebrity';
 
 interface UserStats {
   gamesPlayed: number;
@@ -22,6 +22,7 @@ interface User {
   email: string;
   avatar: string | null;
   balance: number;
+  coins: number;
   rank: UserRank;
   isCelebrity: boolean;
   stats: UserStats;
@@ -37,7 +38,25 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  user: null,
+  user: {
+    id: '',
+    username: '',
+    email: '',
+    avatar: '',
+    balance: 0,
+    coins: 0,
+    rank: 'amateur',
+    isCelebrity: false,
+    stats: {
+      gamesPlayed: 0,
+      gamesWon: 0,
+      totalEarnings: 0,
+      winRate: 0,
+    },
+    friends: [],
+    phoneNumber: '',
+    createdAt: '',
+  },
   isLoading: false,
   error: null,
 };
@@ -67,12 +86,12 @@ const userSlice = createSlice({
     },
     removeFriend: (state, action: PayloadAction<string>) => {
       if (state.user) {
-        state.user.friends = state.user.friends.filter(f => f.id !== action.payload);
+        state.user.friends = state.user.friends.filter((f) => f.id !== action.payload);
       }
     },
     updateFriendStatus: (state, action: PayloadAction<{ id: string; isOnline: boolean }>) => {
       if (state.user) {
-        const friend = state.user.friends.find(f => f.id === action.payload.id);
+        const friend = state.user.friends.find((f) => f.id === action.payload.id);
         if (friend) {
           friend.isOnline = action.payload.isOnline;
         }
@@ -81,7 +100,7 @@ const userSlice = createSlice({
     setCelebrityStatus: (state, action: PayloadAction<boolean>) => {
       if (state.user) {
         state.user.isCelebrity = action.payload;
-        state.user.rank = action.payload ? 'celebrity' : 'regular';
+        state.user.rank = action.payload ? 'celebrity' : 'amateur';
       }
     },
     clearUser: (state) => {

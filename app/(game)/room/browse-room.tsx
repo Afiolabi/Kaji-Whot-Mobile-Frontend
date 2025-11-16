@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const VideoStream = () => {
+const BrowseRoom = () => {
   return (
     <View>
-      <Text>VideoStream</Text>
+      <Text>BrowseRoom</Text>
     </View>
   )
 }
 
-export default VideoStream
+export default BrowseRoom
 
 const styles = StyleSheet.create({})

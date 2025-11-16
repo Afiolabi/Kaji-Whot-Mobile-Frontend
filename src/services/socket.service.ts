@@ -196,4 +196,4 @@ class SocketService {
   }
 }
 
-export default new SocketService();
+export const socketClient =  new SocketService();

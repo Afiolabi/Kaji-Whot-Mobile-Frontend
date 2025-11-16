@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { RootState } from '@/store';
 import Avatar from '@components/common/Avatar';
 import Svg, { Path, Circle, Ellipse } from 'react-native-svg';
+import { useAppSelector } from '@/store/hooks';
 
 // Icons
-const WalletIcon = () => (
+export const WalletIcon = () => (
   <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
     <Path
       d="M21 8H3M21 8V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V8M21 8V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V8"
@@ -21,7 +21,7 @@ const WalletIcon = () => (
   </Svg>
 );
 
-const CoinsIcon = () => (
+export const CoinsIcon = () => (
   <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
     {/* Top coin */}
     <Ellipse cx="12" cy="5" rx="7" ry="3" stroke="#000" strokeWidth="1.5" fill="none" />
@@ -53,7 +53,7 @@ const BellIcon = ({ hasNotification }: { hasNotification?: boolean }) => (
       />
     </Svg>
     {hasNotification && (
-      <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-error rounded-full" />
+      <View className="absolute top-[-0.5] right-1 w-2.5 h-2.5 bg-error rounded-full" />
     )}
   </View>
 );
@@ -72,7 +72,7 @@ export default function Header({
   hasNotification = false,
 }: HeaderProps) {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state: RootState) => state.user.user);
 
   const balance = user?.balance || 500;
   const coins = 2000; // Mock coins data
@@ -91,13 +91,11 @@ export default function Header({
       walletScale.value = withSpring(1, { damping: 15, stiffness: 300 });
     });
 
-    setTimeout(() => {
-      router.push('/(tabs)/wallet');
-    }, 150);
+    router.push('/settings/wallet');
   };
 
   const handleProfilePress = () => {
-    router.push('/(tabs)/profile');
+    router.push('/(tabs)/settings/profile');
   };
 
   const handleNotificationPress = () => {
