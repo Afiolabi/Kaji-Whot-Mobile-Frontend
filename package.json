@@ -9,9 +9,10 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
+    "prebuild-c": "npx expo prebuild --clean",
     "build:android-d": "eas build --platform android --profile development",
     "clean": "npx react-native-clean-project",
-    "clean:android": "cd android && ./gradlew clean && cd .."
+    "clean-a": "cd android && ./gradlew clean && cd .."
   },
   "dependencies": {
     "@daily-co/react-native-daily-js": "^0.82.0",
