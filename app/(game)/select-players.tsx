@@ -106,7 +106,7 @@ export default function OfflineMode() {
 
   const handleStart = () => {
     // Navigate to offline game room with bot count
-    router.push(`/(game)/room/827267831`);
+    router.push(`/game-screen/084978394`);
     console.log(`Starting offline game with ${selectedBotCount} bots`);
   };
 
