@@ -73,7 +73,7 @@ export default function ModeSelection() {
                 </Svg>
               }
               isSelected={selectedMode === 'offline'}
-              onPress={() => handleSelect('offline', '/mode-selection/offline')}
+              onPress={() => handleSelect('offline', '/select-players')}
             />
 
             <ModeButton
@@ -90,7 +90,7 @@ export default function ModeSelection() {
                 </Svg>
               }
               isSelected={selectedMode === 'free'}
-              onPress={() => handleSelect('free', '/mode-selection/free')}
+              onPress={() => handleSelect('free', '/select-players')}
             />
           </View>
 
@@ -110,7 +110,7 @@ export default function ModeSelection() {
                 </Svg>
               }
               isSelected={selectedMode === 'rank'}
-              onPress={() => handleSelect('rank', '/mode-selection/rank')}
+              onPress={() => handleSelect('rank', '/select-players')}
             />
 
             <ModeButton
@@ -128,7 +128,7 @@ export default function ModeSelection() {
                 </Svg>
               }
               isSelected={selectedMode === 'celebrity'}
-              onPress={() => handleSelect('celebrity', '/mode-selection/celebrity')}
+              onPress={() => handleSelect('celebrity', '/select-players')}
             />
           </View>
         </View>
