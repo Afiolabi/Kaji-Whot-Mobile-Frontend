@@ -10,7 +10,16 @@ interface VideoControlsProps {
 
 // Icon components using react-native-svg
 const MicIcon = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="white"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
     <Path d="M19 10v2a7 7 0 0 1-14 0v-2" />
     <Path d="M12 19v3" />
@@ -18,7 +27,16 @@ const MicIcon = () => (
 );
 
 const MicOffIcon = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="white"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M2 2l20 20" />
     <Path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
     <Path d="M5 10v2a7 7 0 0 0 12 5" />
@@ -29,14 +47,32 @@ const MicOffIcon = () => (
 );
 
 const VideoIcon = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="white"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
     <Path d="M2 6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" />
   </Svg>
 );
 
 const VideoOffIcon = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="white"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M10.66 6H14a2 2 0 0 1 2 2v2.34l1 1L22 8v8" />
     <Path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2l10 10Z" />
     <Path d="M2 2 22 22" />
@@ -45,9 +81,9 @@ const VideoOffIcon = () => (
 
 const VideoControls: React.FC<VideoControlsProps> = ({ player, onClose }) => {
   return (
-    <View className="absolute inset-0 bg-black/50 flex items-center justify-center flex-row space-x-4">
+    <View className="absolute inset-x-0 inset-y-2/3  bg-black/50 flex items-center justify-center gap-4 flex-row space-x-4">
       <TouchableOpacity
-        className="w-14 h-14 bg-white rounded-full flex items-center justify-center active:bg-gray-200"
+        className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center active:bg-gray-200"
         onPress={(e) => {
           e.stopPropagation();
           // Handle mute/unmute
@@ -57,7 +93,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({ player, onClose }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="w-14 h-14 bg-white rounded-full flex items-center justify-center active:bg-gray-200"
+        className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center active:bg-gray-200"
         onPress={(e) => {
           e.stopPropagation();
           // Handle video on/off

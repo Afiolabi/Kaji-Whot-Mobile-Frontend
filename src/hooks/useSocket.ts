@@ -20,7 +20,7 @@ export const useSocket = () => {
     emit,
     on,
     off,
-    isConnected: socketClient.isConnected(),
+    // isConnected: socketClient.isConnected(),
     events: SOCKET_EVENTS,
   };
 };

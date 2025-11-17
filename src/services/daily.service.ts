@@ -39,6 +39,32 @@ class DailyService {
     }
   }
 
+  async joinRoom(roomUrl: string, username: string): Promise<void> {
+    try {
+      // this.roomUrl = roomUrl;
+
+      // Create call object
+      this.callObject = Daily.createCallObject({
+        audioSource: true,
+        videoSource: true,
+      });
+
+      // Setup event listeners
+      this.setupEventListeners();
+
+      // Join the room
+      await this.callObject.join({
+        url: roomUrl,
+        userName: username,
+      });
+
+      console.log('✅ Joined Daily.co room');
+    } catch (error) {
+      console.error('Failed to join video room:', error);
+      throw error;
+    }
+  }
+
   private setupEventListeners() {
     if (!this.callObject) return;
 
@@ -174,10 +200,27 @@ class DailyService {
     const participants = this.getParticipants();
     return participants?.local || null;
   }
+//  getLocalStream(): MediaStream | null {
+//     if (!this.callObject) return null;
+    
+//     const participants = this.callObject.participants();
+//     const localParticipant = participants.local;
+    
+//     if (!localParticipant?.tracks) return null;
 
+//     const tracks: MediaStreamTrack[] = [];
+//     if (localParticipant.tracks.audio?.track) {
+//       tracks.push(localParticipant.tracks.audio.track);
+//     }
+//     if (localParticipant.tracks.video?.track) {
+//       tracks.push(localParticipant.tracks.video.track);
+//     }
+
+//     return tracks.length > 0 ? new MediaStream(tracks) : null;
+//   }
   isConnected(): boolean {
     return !!this.callObject && this.callObject.meetingState() === 'joined-meeting';
   }
 }
 
-export default new DailyService();
+export const dailyClient = new DailyService();

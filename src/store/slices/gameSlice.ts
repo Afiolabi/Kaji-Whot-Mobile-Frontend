@@ -60,16 +60,16 @@ const initialState: GameSliceState = {
       isDisconnected: false,
       disconnectedAt: null,
       videoStream: null,
-      isReady: false
+      isReady: true
     },
     {
-      username: 'Bot3', cardCount: 5, isLastCard: false, audioMuted: false, videoDisabled: false,
+      username: 'Bot3', cardCount: 5, isLastCard: false, audioMuted: true, videoDisabled: false,
       id: '',
       avatar: '',
       role: 'player',
       hand: [],
       position: 0,
-      isDisconnected: false,
+      isDisconnected: true,
       disconnectedAt: null,
       videoStream: null,
       isReady: false
@@ -89,8 +89,8 @@ const initialState: GameSliceState = {
   ],
   observers: [],
   myHand: [],
-  isMyTurn: false,
-  canPlayCard: false,
+  isMyTurn: true,
+  canPlayCard: true,
   canDrawCard: true,
   selectedCard: null,
 };

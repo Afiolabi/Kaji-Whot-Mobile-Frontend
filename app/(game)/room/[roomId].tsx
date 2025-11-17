@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StatusBar,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Pressable,
-} from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, Pressable, FlatList } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { RootState } from '@/store';
@@ -213,7 +204,7 @@ interface PlayerSlotProps {
 // Game Card Component
 interface GameCardProps {
   card: CardType;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
   onPress?: () => void;
   selected?: boolean;
   disabled?: boolean;
@@ -221,7 +212,7 @@ interface GameCardProps {
 
 const GameCard = ({ card, size = 'md', onPress, selected, disabled = false }: GameCardProps) => {
   const sizeClasses = {
-    sm: 'w-16 h-24',
+    sm: 'w-18 h-24',
     md: 'w-20 h-32',
     lg: 'w-24 h-36',
   };
@@ -242,7 +233,7 @@ const GameCard = ({ card, size = 'md', onPress, selected, disabled = false }: Ga
         }`}
       >
         {/* Card Number (Top Left) */}
-        <Text className="absolute top-1 left-1 text-xs font-bold">{card.number}</Text>
+        <Text className="absolute top-0.5 left-0.5 text-md font-bold">{card.number}</Text>
 
         {/* Card Shape Icon (Center) */}
         <View className="items-center justify-center">
@@ -254,11 +245,15 @@ const GameCard = ({ card, size = 'md', onPress, selected, disabled = false }: Ga
               />
             </Svg>
           )}
-          {card.shape === 'circle' && <Circle cx="20" cy="20" r="18" fill="#000" />}
+          {card.shape === 'circle' && (
+            <Svg width="40" height="40" viewBox="0 0 40 40">
+              <Circle cx="20" cy="20" r="15" fill="#000" />
+            </Svg>
+          )}
         </View>
 
         {/* Card Number (Bottom Right) */}
-        <Text className="absolute bottom-1 right-1 text-xs font-bold rotate-180">
+        <Text className="absolute bottom-[0.5px] right-0.5 text-md font-bold rotate-180">
           {card.number}
         </Text>
       </Animated.View>
@@ -270,7 +265,7 @@ export default function GameRoom() {
   const router = useRouter();
   const { roomId } = useLocalSearchParams();
   const user = useAppSelector((state: RootState) => state.user.user);
-  const { isConnected } = useSocket();
+  // const { isConnected } = useSocket();
 
   const gameState = useAppSelector((state: RootState) => state.game);
   // Initialize WebRTC
@@ -303,6 +298,11 @@ export default function GameRoom() {
     { id: '8', shape: 'star', number: 1 },
     { id: '9', shape: 'circle', number: 5 },
     { id: '10', shape: 'circle', number: 5 },
+    { id: '11', shape: 'star', number: 1 },
+    { id: '12', shape: 'circle', number: 5 },
+    { id: '13', shape: 'star', number: 1 },
+    { id: '14', shape: 'circle', number: 5 },
+    { id: '15', shape: 'circle', number: 5 },
   ];
 
   useEffect(() => {
@@ -317,9 +317,8 @@ export default function GameRoom() {
     router.back();
   };
 
-
-  const balance = user?.balance || 500;
-  const coins = user?.coins || 2000; // Mock coins data
+  const balance = user?.balance;
+  const coins = user?.coins; // Mock coins data
 
   const walletScale = useSharedValue(1);
 
@@ -343,7 +342,7 @@ export default function GameRoom() {
   const canPlayCard = false;
 
   const handleCardClick = (card: CardType) => {
-    if (!isMyTurn || !canPlayCard) return;
+    // if (!isMyTurn || !canPlayCard) return;
 
     if (selectedCard?.id === card.id) {
       // Play the selected card
@@ -354,10 +353,12 @@ export default function GameRoom() {
       setSelectedCard(card);
     }
   };
+
+  const handleMarket = () => {
+    console.log('Market touched');
+  };
   return (
     <SafeAreaView className="flex-1 bg-neutral-900">
-      {/* <StatusBar barStyle="dark-content" /> */}
-
       {/* Top Bar */}
       <View className="bg-white px-4 py-3 flex-row items-center justify-between">
         <Pressable onPress={handleBack} className="pr-8">
@@ -387,14 +388,36 @@ export default function GameRoom() {
       </View>
 
       {/* Main Game Area */}
-      <View className="flex-1 flex overflow-hidden">
-        <View className="flex-1 flex flex-col">
-          {/* Players Grid */}
+      <View className="flex-1">
+        {/* Players Grid */}
+        <View className="h-[60%]">
           <PlayerGrid
             players={gameState.players}
             currentTurn={gameState.currentTurn}
             myId={user ? user.id : ''}
           />
+          <View className="absolute  top-[15%] w-full">
+            {/* Last Played Card */}
+            <View className="mb-4 left-[38%]">
+              <GameCard card={{ id: 'played', shape: 'star', number: 1 }} size="lg" />
+            </View>
+
+            {/* Market Pile */}
+            <Pressable className="top-[10%] w-[85px] left-[38%] relative" onPress={handleMarket}>
+              <View className="   h-[120px] bg-primary rounded-lg p-2 justify-center items-center">
+                <Text className="text-white font-bold text-lg">Market</Text>
+                {/* <Text className="text-white text-xs mt-1">pile</Text> */}
+                <View className=" absolute top-1 right-1 bg-neutral-200 rounded-full w-6 h-6 items-center justify-center">
+                  <Text className="text-xs font-bold">5</Text>
+                </View>
+              </View>
+            </Pressable>
+
+            {/* Game Status */}
+            <View className=" w-full px-6 py-3 rounded-md top-[18%]">
+              <Text className="text-white text-center text-sm">Game status</Text>
+            </View>
+          </View>
           {/* <View className="relative h-[50%] bg-neutral-800  mt-2">
             <PlayerSlot player={players[0]} isActive={true} position="top-left" />
             <PlayerSlot player={players[1]} isActive={false} position="top-right" />
@@ -403,65 +426,47 @@ export default function GameRoom() {
           </View> */}
 
           {/* Center Playing Area */}
-          <View className="flex-1 items-center justify-center px-4 py-4">
-            {/* Last Played Card */}
-            <View className="mb-4">
-              <GameCard card={{ id: 'played', shape: 'star', number: 1 }} size="md" />
-            </View>
-
-            {/* Market Pile */}
-            <TouchableOpacity className="mb-4">
-              <View className="w-20 h-32 bg-primary rounded-lg items-center justify-center">
-                <Text className="text-white font-bold text-lg">Market</Text>
-                <Text className="text-white text-xs mt-1">pile</Text>
-              </View>
-              <View className="absolute -bottom-2 -right-2 bg-neutral-200 rounded-full w-8 h-8 items-center justify-center">
-                <Text className="text-xs font-bold">5</Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Game Status */}
-            <View className="bg-neutral-700 px-6 py-2 rounded-full">
-              <Text className="text-white text-center text-sm">Game status</Text>
-            </View>
+        </View>
+        {/* Bottom Section - Player's Cards */}
+        <View className="bg-neutral-800 h-[40%] w-full rounded-t-3xl py-2 ">
+          <View className="flex-row border-b-2 border-neutral-700">
+            <Pressable
+              onPress={() => setActiveTab('cards')}
+              className={`flex-1 py-3 ${activeTab === 'cards' ? 'border-b-[1.2px] border-primary-400' : ''}`}
+            >
+              <Text className="text-white text-center font-semibold">My cards</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setActiveTab('chat')}
+              className={`flex-1 py-3 ${activeTab === 'chat' ? 'border-b-[1.2px] border-primary-400' : ''}`}
+            >
+              <Text className="text-white text-center font-semibold">Game chat</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setActiveTab('menu')}
+              className={`flex-1 py-3 ${activeTab === 'menu' ? 'border-b-[1.2px] border-primary-400' : ''}`}
+            >
+              <Text className="text-white text-center font-semibold">Menu</Text>
+            </Pressable>
           </View>
+          {activeTab === 'cards' && (
+            <FlatList
+              data={myCards}
+              numColumns={5}
+              bounces={false}
+              keyExtractor={(item, index) => index.toString()}
+              className="bg-gray-800 rounded-lg p-2"
+              showsVerticalScrollIndicator={false}
+              columnWrapperStyle={{ gap: 8, marginBottom: 8 }}
+              renderItem={({ item }) => (
+                <View style={{ flex: 1, maxWidth: '20%' }}>
+                  <GameCard card={item} size="sm" onPress={() => handleCardClick(item)} />
+                </View>
+              )}
+            />
+          )}
 
-          {/* Bottom Section - Player's Cards */}
-          <View className="bg-neutral-800 rounded-t-3xl pt-4 pb-2">
-            <View className="flex-row border-b-2 border-neutral-700 mb-4">
-              <TouchableOpacity
-                onPress={() => setActiveTab('cards')}
-                className={`flex-1 py-3 ${activeTab === 'cards' ? 'border-b-[1.2px] border-white' : ''}`}
-              >
-                <Text className="text-white text-center font-semibold">My cards</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setActiveTab('chat')}
-                className={`flex-1 py-3 ${activeTab === 'chat' ? 'border-b-[1.2px] border-white' : ''}`}
-              >
-                <Text className="text-white text-center font-semibold">Game chat</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setActiveTab('menu')}
-                className={`flex-1 py-3 ${activeTab === 'menu' ? 'border-b-[1.2px] border-white' : ''}`}
-              >
-                <Text className="text-white text-center font-semibold">Menu</Text>
-              </TouchableOpacity>
-            </View>
-            {activeTab === 'cards' && (
-              <ScrollView
-                className="bg-gray-800 rounded-lg p-4"
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
-              >
-                {myCards.map((card, key) => (
-                  <GameCard card={card} size="md" onPress={() => handleCardClick(card)} />
-                ))}
-              </ScrollView>
-            )}
-
-            {/* Bottom Tabs */}
-          </View>
+          {/* Bottom Tabs */}
         </View>
       </View>
     </SafeAreaView>

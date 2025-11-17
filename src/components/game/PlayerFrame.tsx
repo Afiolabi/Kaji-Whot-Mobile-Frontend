@@ -26,14 +26,14 @@ const PlayerFrame: React.FC<PlayerFrameProps> = ({ player, isActive, isMe }) => 
       activeOpacity={0.9}
     >
       {/* Video Feed */}
-      {/* <Video
+      <Video
         ref={videoRef}
         className="w-full h-full bg-gray-900"
         source={{ uri: player?.videoStream }}
         shouldPlay
         isMuted={isMe}
         resizeMode={ResizeMode.COVER}
-      /> */}
+      />
 
       {/* Player Info Overlay */}
       <View className="absolute bottom-0 left-0 right-0 bg-black/50 p-2">
@@ -67,7 +67,7 @@ const PlayerFrame: React.FC<PlayerFrameProps> = ({ player, isActive, isMe }) => 
       )}
 
       {/* Video Controls Overlay */}
-      {showControls && !isMe && (
+      {showControls  && (
         <VideoControls
           player={player}
           onClose={() => setShowControls(false)}

@@ -16,7 +16,7 @@ interface Friend {
   isOnline: boolean;
 }
 
-interface User {
+type User = {
   id: string;
   username: string;
   email: string;
@@ -31,7 +31,7 @@ interface User {
   createdAt: string;
 }
 
-interface UserState {
+interface UserState{
   user: User | null;
   isLoading: boolean;
   error: string | null;

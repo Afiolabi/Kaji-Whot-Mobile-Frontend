@@ -1,18 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-// import { dailyClient } from '@/services/webrtc/dailyClient';
-import { setConnectionStatus, setRoomUrl, setAudioEnabled, setVideoEnabled } from '@/services/webrtc/webrtcSlice';
-import { dailyClient } from '@/services/webrtc/dailyClient';
-
+import { dailyClient } from '@/services/daily.service';
+import { setConnected, setLocalAudio, setLocalVideo, setRoomUrl } from '@/store/slices/webrtcSlice';
 
 export const useWebRTC = (roomId: string | null) => {
   const dispatch = useAppDispatch();
-  const { localStream, remoteStreams, isConnected, audioEnabled, videoEnabled } = useAppSelector(
-    (state) => state.webrtc
-  );
+  const { localStream, remoteStreams, isConnected, localAudioEnabled, localVideoEnabled } =
+    useAppSelector((state) => state.webrtc);
   const user = useAppSelector((state) => state.user);
   const hasJoined = useRef(false);
-
   useEffect(() => {
     const initVideo = async () => {
       if (!roomId || !user || hasJoined.current) return;
@@ -20,15 +16,15 @@ export const useWebRTC = (roomId: string | null) => {
       try {
         // Create or get room URL
         const roomUrl = await dailyClient.createRoom(roomId);
-        dispatch(setRoomUrl(roomUrl));
+        dispatch(setRoomUrl(roomUrl ?? ''));
 
         // Join the room
-        await dailyClient.joinRoom(roomUrl, user.username);
-        dispatch(setConnectionStatus(true));
+        await dailyClient.joinRoom(roomUrl ?? '', user.user ? user?.user.username : 'User');
+        dispatch(setConnected(true));
         hasJoined.current = true;
       } catch (error) {
         console.error('Failed to initialize video:', error);
-        dispatch(setConnectionStatus(false));
+        dispatch(setConnected(false));
       }
     };
 
@@ -44,20 +40,20 @@ export const useWebRTC = (roomId: string | null) => {
   }, [roomId, user, dispatch]);
 
   const toggleAudio = async () => {
-    const newState = !audioEnabled;
-    await dailyClient.toggleAudio(!newState);
-    dispatch(setAudioEnabled(newState));
+    const newState = !localAudioEnabled;
+    await dailyClient.toggleLocalAudio(!newState);
+    dispatch(setLocalAudio(newState));
   };
 
   const toggleVideo = async () => {
-    const newState = !videoEnabled;
-    await dailyClient.toggleVideo(!newState);
-    dispatch(setVideoEnabled(newState));
+    const newState = !localVideoEnabled;
+    await dailyClient.toggleLocalVideo(!newState);
+    dispatch(setLocalVideo(newState));
   };
 
   const leaveRoom = async () => {
     await dailyClient.leaveRoom();
-    dispatch(setConnectionStatus(false));
+    dispatch(setConnected(false));
     hasJoined.current = false;
   };
 
@@ -65,8 +61,8 @@ export const useWebRTC = (roomId: string | null) => {
     localStream,
     remoteStreams,
     isConnected,
-    audioEnabled,
-    videoEnabled,
+    localAudioEnabled,
+    localVideoEnabled,
     toggleAudio,
     toggleVideo,
     leaveRoom,
