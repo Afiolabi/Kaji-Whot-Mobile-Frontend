@@ -1,11 +1,11 @@
 import { Redirect } from 'expo-router';
-import { useSelector } from 'react-redux';
 import { View, ActivityIndicator } from 'react-native';
 import { RootState } from '@/store';
+import { useAppSelector } from '@/store/hooks';
 
 export default function Index() {
-  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
-  const user = useSelector((state: RootState) => state.user.user);
+  const { isAuthenticated, isLoading } = useAppSelector((state: RootState) => state.auth);
+  const user = useAppSelector((state: RootState) => state.user.user);
 
   if (isLoading) {
     return (

@@ -1,42 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export type GameMode = 'free' | 'rank' | 'celebrity' | 'offline';
-export type Direction = 'clockwise' | 'counterclockwise';
-
-export interface Card {
-  id: string;
-  shape: 'circle' | 'triangle' | 'cross' | 'square' | 'star';
-  number: number | 'whot';
-  isSpecial?: boolean; // pick2, hold-on, general-market, etc.
-}
-
-export interface Player {
-  id: string;
-  username: string;
-  avatar: string;
-  hand: Card[]; // Only populated for current user
-  cardCount: number;
-  isDisconnected: boolean;
-  isLastCard: boolean;
-  videoStream: any; // MediaStream type
-  audioMuted: boolean;
-  videoDisabled: boolean;
-  position: number; // 0-3 for 4 players
-  hasPlayedTurn?: boolean;
-  missedTurns?: number;
-}
-
-export interface GameState {
-  market: Card[];
-  playedCards: Card[];
-  currentTurn: string; // player id
-  direction: Direction;
-  turnTimer: number;
-  gameTimer: number;
-  lastPlayedCard: Card | null;
-  activeShape: string | null; // For whot card declarations
-}
-
+import { GameState, Player, Observer, TurnDirection } from '@/types/game.types';
+import { Card, PlayedCard } from '@/types/card.types';
+import { GameMode } from '@/types/user.types';
 export interface GameResults {
   winner: string; // userId
   rankings: { userId: string; position: number; earnings: number }[];
@@ -48,140 +13,214 @@ export interface GameResults {
   };
 }
 
-interface Game {
-  roomId: string | null;
-  mode: GameMode | null;
-  gameState: GameState | null;
+interface GameSliceState extends GameState {
   players: Player[];
-  results: GameResults | null;
-  isActive: boolean;
-  isPaused: boolean;
+  observers: Observer[];
+  myHand: Card[];
+  isMyTurn: boolean;
+  canPlayCard: boolean;
+  canDrawCard: boolean;
+  selectedCard: Card | null;
 }
 
-const initialState: Game = {
-  roomId: null,
-  mode: null,
-  gameState: null,
-  players: [],
-  results: null,
-  isActive: false,
-  isPaused: false,
+const initialState: GameSliceState = {
+  roomId: '',
+  mode: 'free',
+  status: 'waiting',
+  currentTurn: '',
+  direction: 'clockwise',
+  market: [],
+  playedCards: [],
+  lastPlayedCard: null,
+  turnTimer: 30,
+  gameTimer: 900,
+  startTime: null,
+  endTime: null,
+  winner: null,
+  players: [
+    {
+      username: 'Bot1', cardCount: 0, isLastCard: true, audioMuted: false, videoDisabled: false,
+      id: '',
+      avatar: '',
+      role: 'player',
+      hand: [],
+      position: 0,
+      isDisconnected: false,
+      disconnectedAt: null,
+      videoStream: null,
+      isReady: false
+    },
+    {
+      username: 'Bot2', cardCount: 14, isLastCard: false, audioMuted: false, videoDisabled: false,
+      id: '',
+      avatar: '',
+      role: 'player',
+      hand: [],
+      position: 0,
+      isDisconnected: false,
+      disconnectedAt: null,
+      videoStream: null,
+      isReady: true
+    },
+    {
+      username: 'Bot3', cardCount: 5, isLastCard: false, audioMuted: true, videoDisabled: false,
+      id: '',
+      avatar: '',
+      role: 'player',
+      hand: [],
+      position: 0,
+      isDisconnected: true,
+      disconnectedAt: null,
+      videoStream: null,
+      isReady: false
+    },
+    {
+      username: 'Me', cardCount: 3, isLastCard: false, audioMuted: true, videoDisabled: true,
+      id: '',
+      avatar: '',
+      role: 'player',
+      hand: [],
+      position: 0,
+      isDisconnected: false,
+      disconnectedAt: null,
+      videoStream: null,
+      isReady: false
+    },
+  ],
+  observers: [],
+  myHand: [],
+  isMyTurn: true,
+  canPlayCard: true,
+  canDrawCard: true,
+  selectedCard: null,
 };
 
 const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    initGame: (state, action: PayloadAction<{ roomId: string; mode: GameMode }>) => {
-      state.roomId = action.payload.roomId;
-      state.mode = action.payload.mode;
-      state.isActive = false;
-    },
-    startGame: (state, action: PayloadAction<{ gameState: GameState; players: Player[] }>) => {
-      state.gameState = action.payload.gameState;
-      state.players = action.payload.players;
-      state.isActive = true;
-      state.isPaused = false;
-    },
-    updateGameState: (state, action: PayloadAction<Partial<GameState>>) => {
-      if (state.gameState) {
-        state.gameState = { ...state.gameState, ...action.payload };
-      }
+    setGameState: (state, action: PayloadAction<Partial<GameSliceState>>) => {
+      return { ...state, ...action.payload };
     },
     updatePlayers: (state, action: PayloadAction<Player[]>) => {
       state.players = action.payload;
     },
     updatePlayer: (state, action: PayloadAction<{ playerId: string; updates: Partial<Player> }>) => {
-      const playerIndex = state.players.findIndex(p => p.id === action.payload.playerId);
-      if (playerIndex !== -1) {
-        state.players[playerIndex] = { ...state.players[playerIndex], ...action.payload.updates };
+      const index = state.players.findIndex((p) => p.id === action.payload.playerId);
+      if (index !== -1) {
+        state.players[index] = { ...state.players[index], ...action.payload.updates };
       }
     },
-    playCard: (state, action: PayloadAction<Card>) => {
-      if (state.gameState) {
-        state.gameState.playedCards.push(action.payload);
-        state.gameState.lastPlayedCard = action.payload;
+    addPlayedCard: (state, action: PayloadAction<PlayedCard>) => {
+      state.playedCards.push(action.payload);
+      state.lastPlayedCard = action.payload;
+      if (state.playedCards.length > 10) {
+        state.playedCards = state.playedCards.slice(-10);
       }
     },
-    drawCards: (state, action: PayloadAction<{ playerId: string; count: number; cards?: Card[] }>) => {
-      const player = state.players.find(p => p.id === action.payload.playerId);
-      if (player) {
-        if (action.payload.cards) {
-          player.hand.push(...action.payload.cards);
-        }
-        player.cardCount += action.payload.count;
+    updateMyHand: (state, action: PayloadAction<Card[]>) => {
+      state.myHand = action.payload;
+    },
+    addCardToHand: (state, action: PayloadAction<Card>) => {
+      state.myHand.push(action.payload);
+    },
+    removeCardFromHand: (state, action: PayloadAction<string>) => {
+      state.myHand = state.myHand.filter((card: { id: string; }) => card.id !== action.payload);
+    },
+    selectCard: (state, action: PayloadAction<Card | null>) => {
+      state.selectedCard = action.payload;
+    },
+    setTurn: (state, action: PayloadAction<{ playerId: string; timer: number }>) => {
+      state.currentTurn = action.payload.playerId;
+      state.turnTimer = action.payload.timer;
+    },
+    decrementTurnTimer: (state) => {
+      if (state.turnTimer > 0) {
+        state.turnTimer -= 1;
       }
     },
-    setCurrentTurn: (state, action: PayloadAction<string>) => {
-      if (state.gameState) {
-        state.gameState.currentTurn = action.payload;
-        state.gameState.turnTimer = 30; // Reset turn timer
+    decrementGameTimer: (state) => {
+      if (state.gameTimer > 0) {
+        state.gameTimer -= 1;
       }
     },
-    updateTurnTimer: (state, action: PayloadAction<number>) => {
-      if (state.gameState) {
-        state.gameState.turnTimer = action.payload;
+     updateTurnTimer: (state, action: PayloadAction<number>) => {
+      if (state) {
+        state.turnTimer = action.payload;
       }
     },
     updateGameTimer: (state, action: PayloadAction<number>) => {
-      if (state.gameState) {
-        state.gameState.gameTimer = action.payload;
+      if (state) {
+        state.gameTimer = action.payload;
       }
     },
-    setDirection: (state, action: PayloadAction<Direction>) => {
-      if (state.gameState) {
-        state.gameState.direction = action.payload;
+    toggleDirection: (state) => {
+      state.direction = state.direction === 'clockwise' ? 'counterclockwise' : 'clockwise';
+    },
+    updateObservers: (state, action: PayloadAction<Observer[]>) => {
+      state.observers = action.payload;
+    },
+    addObserver: (state, action: PayloadAction<Observer>) => {
+      state.observers.push(action.payload);
+    },
+    removeObserver: (state, action: PayloadAction<string>) => {
+      state.observers = state.observers.filter((o) => o.id !== action.payload);
+    },
+    updateObserver: (state, action: PayloadAction<{ observerId: string; updates: Partial<Observer> }>) => {
+      const index = state.observers.findIndex((o) => o.id === action.payload.observerId);
+      if (index !== -1) {
+        state.observers[index] = { ...state.observers[index], ...action.payload.updates };
       }
     },
-    setActiveShape: (state, action: PayloadAction<string>) => {
-      if (state.gameState) {
-        state.gameState.activeShape = action.payload;
-      }
-    },
-    playerDisconnected: (state, action: PayloadAction<string>) => {
-      const player = state.players.find(p => p.id === action.payload);
+     playerDisconnected: (state, action: PayloadAction<string>) => {
+      const player = state.players.find((p) => p.id === action.payload);
       if (player) {
         player.isDisconnected = true;
       }
     },
     playerReconnected: (state, action: PayloadAction<string>) => {
-      const player = state.players.find(p => p.id === action.payload);
+      const player = state.players.find((p) => p.id === action.payload);
       if (player) {
         player.isDisconnected = false;
-        player.missedTurns = 0;
+        // player.missedTurns = 0;
       }
     },
-    pauseGame: (state) => {
-      state.isPaused = true;
+    setGameStatus: (state, action: PayloadAction<GameSliceState['status']>) => {
+      state.status = action.payload;
     },
-    resumeGame: (state) => {
-      state.isPaused = false;
-    },
-    endGame: (state, action: PayloadAction<GameResults>) => {
-      state.results = action.payload;
-      state.isActive = false;
+    endGame: (state, action: PayloadAction<{ winner: string; endTime: number }>) => {
+      state.status = 'ended';
+      state.winner = action.payload.winner;
+      state.endTime = action.payload.endTime;
     },
     resetGame: () => initialState,
   },
 });
 
 export const {
-  initGame,
-  startGame,
-  updateGameState,
-  updatePlayers,
-  updatePlayer,
-  playCard,
-  drawCards,
-  setCurrentTurn,
   updateTurnTimer,
   updateGameTimer,
-  setDirection,
-  setActiveShape,
+  // setActiveShape,
   playerDisconnected,
   playerReconnected,
-  pauseGame,
-  resumeGame,
+  //---
+  setGameState,
+  updatePlayers,
+  updatePlayer,
+  addPlayedCard,
+  updateMyHand,
+  addCardToHand,
+  removeCardFromHand,
+  selectCard,
+  setTurn,
+  decrementTurnTimer,
+  decrementGameTimer,
+  toggleDirection,
+  updateObservers,
+  addObserver,
+  removeObserver,
+  updateObserver,
+  setGameStatus,
   endGame,
   resetGame,
 } = gameSlice.actions;

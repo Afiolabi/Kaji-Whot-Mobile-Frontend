@@ -1,5 +1,4 @@
 import { View, Text, SafeAreaView, StatusBar, Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Animated, {
   useSharedValue,
@@ -13,6 +12,7 @@ import Animated, {
 import { RootState } from '@/store';
 import Svg, { Path, Circle } from 'react-native-svg';
 import Header from '@/components/common/Header';
+import { useAppSelector } from '@/store/hooks';
 
 const PlayIcon = () => (
   <Svg width={120} height={120} viewBox="0 0 80 80" fill="none">
@@ -29,7 +29,7 @@ const PlayIcon = () => (
 
 export default function Landing() {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state: RootState) => state.user.user);
 
   // Animation values
   const scale = useSharedValue(1);
