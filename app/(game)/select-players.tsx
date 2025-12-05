@@ -123,13 +123,13 @@ export default function SelectPlayers() {
   const user = useAppSelector((state: RootState) => state.user.user);
 
   const mode = params.mode as string; // 'offline' | 'rank' | 'free' | 'celebrity'
-  const tier = params.tier as string; // For rank mode
+  // const tier = params.tier as string; // For rank mode
   const fee = params.fee ? Number(params.fee) : 0; // Entry fee
-
+  // console.log('mode/rank = ', mode, '/', tier);
   const [selectedBotCount, setSelectedBotCount] = useState<number>(mode === 'offline' ? 1 : 0);
 
   const getTierStars = () => {
-    switch (tier) {
+    switch (mode) {
       case 'amateur':
         return 1;
       case 'master':
@@ -151,30 +151,33 @@ export default function SelectPlayers() {
         return 'Whot Lord';
       case 'offline':
         return 'Offline Room';
+      case 'celebrity':
+        return 'Celebrity Room';
       default:
         return 'Free Room';
     }
   };
 
   const handleContinue = () => {
-    // Check wallet balance for rank mode
-    if (mode === 'rank') {
-      if (user && user.balance < fee) {
-        // Show insufficient funds modal
-        alert(`Insufficient balance. You need ₦${fee} to join this game.`);
-        return;
-      }
-    }
-
-    // For offline mode, go directly to game
     if (mode === 'offline') {
       router.push(`/(game)/game-screen/offline-${Date.now()}`);
       return;
     }
 
-    // For online modes, create room and go to lobby
+    // For online modes, create game and go to lobby
     const roomId = `room-${Date.now()}`;
-    router.push(`/(game)/lobby/${roomId}` as any);
+    const gameMode = mode;
+    //call createGame({
+    // roomId,
+    // gameMode,
+    // user,
+    // fee,
+    //numberOfOpponents
+    // })
+
+    //fetch created game id
+    //navigate to lobby with gameId
+    router.replace(`/(game)/lobby/${roomId}` as any);
   };
 
   const handleBackPress = () => {
@@ -287,14 +290,13 @@ export default function SelectPlayers() {
           )}
         </View>
 
-        {/* Entry Fee Display (for rank mode) */}
-        {mode === 'rank' && (
+        {mode !== 'free' && mode !== 'offline' && (
           <View className="items-center mb-8">
             <Text className="text-sm text-neutral-600 mb-1">Entry Fee</Text>
             <Text className="text-2xl font-bold text-primary">₦{fee}</Text>
-            <Text className="text-sm text-neutral-400 mt-1">
+            {/* <Text className="text-sm text-neutral-400 mt-1">
               Your balance: ₦{user?.balance || 0}
-            </Text>
+            </Text> */}
           </View>
         )}
 

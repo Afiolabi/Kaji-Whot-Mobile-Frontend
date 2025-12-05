@@ -160,7 +160,6 @@ export default function SelectRank() {
   const handleJoinRoom = (id: string) => {
     setSelectedTier(id);
     console.log('id= ', id);
-    // Navigate to lobby
     router.push(`/(game)/join-create-game?mode=${id}` as any);
   };
 
@@ -177,7 +176,7 @@ export default function SelectRank() {
 
       {/* Tier Selection */}
       <Text className="text-lg mt-[40%] font-semibold text-neutral-600 px-8">
-        Create or join a game
+        Select a rank to join
       </Text>
       <View className="mb-5 px-8 py-4">
         <FlatList

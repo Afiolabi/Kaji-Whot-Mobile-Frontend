@@ -200,7 +200,7 @@ const ChatMessageItem = ({ message }: { message: ChatMessage }) => {
         <Text className="text-xs font-semibold text-neutral-600 mb-1">{message.username}</Text>
       )}
       <View
-        className={`rounded-2xl px-4 py-2 max-w-[80%] ${
+        className={`rounded-2xl px-2 py-1 max-w-[80%] ${
           message.isMe ? 'bg-neutral-100' : 'bg-white border border-neutral-200'
         }`}
       >
@@ -218,7 +218,7 @@ export default function LobbyScreen() {
   const [players, setPlayers] = useState<Player[]>(MOCK_PLAYERS);
   const [messages, setMessages] = useState<ChatMessage[]>(MOCK_MESSAGES);
   const [messageInput, setMessageInput] = useState('');
-  const [countdown, setCountdown] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(3);
   const [potAmount] = useState(500000);
   const scrollViewRef = useRef<ScrollView>(null);
 
