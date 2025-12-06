@@ -314,7 +314,7 @@ export default function GameRoom() {
   }, []);
 
   const handleBack = () => {
-    router.back();
+    router.replace('/(game)/join-create-game?mode=');
   };
 
   const balance = user?.balance;
@@ -333,7 +333,7 @@ export default function GameRoom() {
       walletScale.value = withSpring(1, { damping: 15, stiffness: 300 });
     });
 
-    router.push('/settings/wallet');
+    // router.push('/(wallet)/fund');
   };
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
   const { playCard } = useGameActions();

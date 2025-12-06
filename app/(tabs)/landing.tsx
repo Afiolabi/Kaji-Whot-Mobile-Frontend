@@ -64,11 +64,7 @@ const handlePressIn = () => {
     
   };
   const handlePlayPress = () => {
-
-    // Navigate after a short delay to show animation
-    // setTimeout(() => {
-      router.push('/mode-selection');
-    // }, 200);
+      router.push('/(game)/mode-selection');
   };
 
   return (
@@ -98,9 +94,6 @@ const handlePressIn = () => {
           </Animated.View>
         </Pressable>
       </View>
-
-      {/* Bottom spacing for tab bar */}
-      {/* <View className="h-4" /> */}
     </SafeAreaView>
   );
 }
