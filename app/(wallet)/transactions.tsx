@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const ResetPassword = () => {
+const TransactionHistory = () => {
   return (
     <View>
-      <Text>ResetPassword</Text>
+      <Text>TransactionHistory</Text>
     </View>
   )
 }
 
-export default ResetPassword
+export default TransactionHistory
 
 const styles = StyleSheet.create({})
