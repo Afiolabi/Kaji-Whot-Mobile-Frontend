@@ -49,7 +49,7 @@ interface PlayerSlotProps {
   onPress?: () => void;
 }
 
-const PlayerSlot = ({ type, label, isSelected, onPress }: PlayerSlotProps) => {
+export const PlayerSlot = ({ type, label, isSelected, onPress }: PlayerSlotProps) => {
   if (type === 'player') {
     return (
       <View className="items-center">

@@ -8,10 +8,12 @@ import {
   FlatList,
   TextInput,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import Header from '@components/common/Header';
+import { useSocket } from '@/hooks/useSocket';
 
 // Icons
 const BackIcon = () => (
@@ -116,6 +118,8 @@ interface Room {
   maxPlayers: number;
   status: 'Live' | 'Starting in' | 'Game ended';
   timeRemaining: string;
+  startingIn?: number; // seconds until start
+  lastUpdated: number;
 }
 
 // Mock data
@@ -136,6 +140,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Live',
       timeRemaining: '2:15s',
+      lastUpdated: 0,
     },
     {
       id: '2',
@@ -144,6 +149,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Game ended',
       timeRemaining: '5:12s',
+      lastUpdated: 0,
     },
     {
       id: '3',
@@ -152,6 +158,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Starting in',
       timeRemaining: '2:15s',
+      lastUpdated: 0,
     },
     {
       id: '4',
@@ -160,6 +167,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 3,
       status: 'Starting in',
       timeRemaining: '--:--',
+      lastUpdated: 0,
     },
   ],
   free: [
@@ -170,6 +178,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Live',
       timeRemaining: '1:30s',
+      lastUpdated: 0,
     },
     {
       id: '6',
@@ -178,6 +187,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Starting in',
       timeRemaining: '0:45s',
+      lastUpdated: 0,
     },
   ],
   amateur: [
@@ -188,6 +198,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Live',
       timeRemaining: '1:30s',
+      lastUpdated: 0,
     },
     {
       id: '6',
@@ -196,6 +207,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Starting in',
       timeRemaining: '0:45s',
+      lastUpdated: 0,
     },
   ],
   master: [
@@ -206,6 +218,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Live',
       timeRemaining: '1:30s',
+      lastUpdated: 0,
     },
     {
       id: '6',
@@ -214,6 +227,7 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Starting in',
       timeRemaining: '0:45s',
+      lastUpdated: 0,
     },
   ],
   lord: [
@@ -224,11 +238,31 @@ const MOCK_ROOMS: { [key: string]: Room[] } = {
       maxPlayers: 4,
       status: 'Live',
       timeRemaining: '3:20s',
+      lastUpdated: 0,
     },
   ],
 };
 
 const RoomListItem = ({ room, onPress }: { room: Room; onPress: () => void }) => {
+  const [countdown, setCountdown] = useState(room.startingIn || 0);
+  useEffect(() => {
+    if (room.status === 'Starting in' && room.startingIn) {
+      setCountdown(room.startingIn);
+
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [room.startingIn, room.status]);
+
   const getStatusColor = () => {
     switch (room.status) {
       case 'Live':
@@ -242,11 +276,23 @@ const RoomListItem = ({ room, onPress }: { room: Room; onPress: () => void }) =>
     }
   };
 
+  const getStatusText = () => {
+    if (room.status === 'Starting in' && countdown > 0) {
+      return `Starting in ${countdown}s`;
+    }
+    return room.status;
+  };
+
+  const isJoinable = room.status !== 'Game ended' && room.players < room.maxPlayers;
+
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={!isJoinable}
       activeOpacity={0.7}
-      className="bg-white rounded-2xl p-4 mb-3 border border-neutral-200"
+      className={`bg-white rounded-2xl p-4 mb-3 border border-neutral-200  ${
+        !isJoinable ? 'opacity-50' : ''
+      }`}
     >
       <View className="flex-row items-center justify-between mb-2">
         <View className="flex-row items-center flex-1">
@@ -257,9 +303,19 @@ const RoomListItem = ({ room, onPress }: { room: Room; onPress: () => void }) =>
             <Text className="text-base font-semibold text-neutral-900 mb-1">{room.host}</Text>
             <View className="flex-row items-center">
               <UsersIcon />
-              <Text className="text-sm text-neutral-600 ml-1">
+              <Text
+                className={`text-sm ml-1 ${
+                  room.players >= room.maxPlayers ? 'text-error font-bold' : 'text-neutral-600'
+                }`}
+              >
                 {room.players}/{room.maxPlayers}
               </Text>
+              {room.status === 'Live' && (
+                <View className="ml-2 flex-row items-center">
+                  <View className="w-2 h-2 rounded-full bg-success mr-1 animate-pulse" />
+                  <Text className="text-xs text-success font-semibold">LIVE</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -275,26 +331,90 @@ const RoomListItem = ({ room, onPress }: { room: Room; onPress: () => void }) =>
 
 export default function JoinCreateGame() {
   const router = useRouter();
-  const [selectedTier, setSelectedTier] = useState<string>('');
+  const params = useLocalSearchParams();
+  const mode = params.mode as string; // 'offline' | 'rank' | 'free' | 'celebrity'
+  const { on, off } = useSocket();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [rooms, setRooms] = useState<Room[]>(MOCK_ROOMS.amateur);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const params = useLocalSearchParams();
-
-  const mode = params.mode as string; // 'offline' | 'rank' | 'free' | 'celebrity'
+  // Fetch rooms on mount
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setRooms(MOCK_ROOMS[mode as keyof typeof MOCK_ROOMS] || []);
-      setIsLoading(false);
-    }, 300);
+    fetchRooms();
   }, [mode]);
+
+  useEffect(() => {
+    on('roomUpdated', (data: any) => {
+      setRooms((prevRooms) => {
+        const index = prevRooms.findIndex((r) => r.id === data.roomId);
+        if (index !== -1) {
+          const newRooms = [...prevRooms];
+          newRooms[index] = {
+            ...newRooms[index],
+            ...data.updates,
+            lastUpdated: Date.now(),
+          };
+          return newRooms;
+        }
+        return prevRooms;
+      });
+    });
+
+    on('roomCreated', (data: any) => {
+      setRooms((prevRooms) => [
+        {
+          id: data.roomId,
+          host: data.hostUsername,
+          players: 1,
+          maxPlayers: data.settings.maxPlayers,
+          status: 'Starting in',
+          timeRemaining: '--:--',
+          lastUpdated: Date.now(),
+        },
+        ...prevRooms,
+      ]);
+    });
+
+    on('roomDeleted', (data: { roomId: string }) => {
+      setRooms((prevRooms) => prevRooms.filter((r) => r.id !== data.roomId));
+    });
+
+    return () => {
+      off('roomUpdated');
+      off('roomCreated');
+      off('roomDeleted');
+    };
+  }, [on, off]);
+
+  const fetchRooms = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Replace with actual API call
+      // const response = await apiService.getRooms(mode);
+      // setRooms(response.data);
+
+      // Mock data for now
+      setTimeout(() => {
+        setRooms(MOCK_ROOMS[mode as keyof typeof MOCK_ROOMS] || []);
+        setIsLoading(false);
+      }, 500);
+    } catch (error) {
+      console.error('Error fetching rooms:', error);
+      setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchRooms();
+    setIsRefreshing(false);
+  };
 
   const filteredRooms = rooms.filter((room) =>
     room.host.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const handleCreateGame = () => {
     // Navigate to select-players with tier info
     router.push({
@@ -310,7 +430,7 @@ export default function JoinCreateGame() {
   const handleJoinRoom = (roomId: string) => {
     // Navigate to lobby
     // router.push('/game-result');
-    router.push(`/(game)/lobby/${roomId}` as any);
+    router.push(`/(game)/lobby/${roomId}?mode=${mode}` as any);
   };
 
   const handleBackPress = () => {
@@ -351,7 +471,6 @@ export default function JoinCreateGame() {
           <TextInput
             placeholder="Search"
             cursorColor="#a855f7"
-
             value={searchQuery}
             onChangeText={setSearchQuery}
             className="flex-1  border border-purple-500 rounded-r-xl text-base text-purple-800  px-4 py-3"
@@ -369,11 +488,19 @@ export default function JoinCreateGame() {
         </TouchableOpacity>
 
         {/* Rooms List */}
-        <Text className="text-sm font-semibold text-neutral-600 mb-3">Available Rooms</Text>
-
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-sm font-semibold text-neutral-600">
+            Available Rooms ({filteredRooms.length})
+          </Text>
+          {/* <TouchableOpacity onPress={handleRefresh} disabled={isRefreshing}>
+            <Text className="text-sm font-semibold text-primary">
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            </Text>
+          </TouchableOpacity> */}
+        </View>
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#FF385C" />
+            <ActivityIndicator size="large" color="#a855f7" />
           </View>
         ) : (
           <FlatList
@@ -383,6 +510,13 @@ export default function JoinCreateGame() {
               <RoomListItem room={item} onPress={() => handleJoinRoom(item.id)} />
             )}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor="#FF385C"
+              />
+            }
             ListEmptyComponent={
               <View className="items-center justify-center py-12">
                 <Text className="text-neutral-400 text-base">No rooms available</Text>
