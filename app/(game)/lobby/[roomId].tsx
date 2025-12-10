@@ -494,7 +494,7 @@ export default function LobbyScreen() {
 
       {/* Chat Input */}
 
-      <ScrollView className="flex-1 rounded-2xl p-2  bg-purple-50 pb-16">
+      <View className="flex-1 rounded-2xl p-2  bg-purple-50 pb-16">
         <GiftedChat
           messages={messages}
           onSend={(messages) => onSend(messages)}
@@ -531,7 +531,7 @@ export default function LobbyScreen() {
           renderTime={() => null}
           isScrollToBottomEnabled
         />. 
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
