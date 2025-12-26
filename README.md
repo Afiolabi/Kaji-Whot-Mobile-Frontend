@@ -219,11 +219,11 @@ eas build --platform android
 
 ## 🤝 Development Workflow
 
-1. **Feature Branch**: Create from `main`
+1. **Feature Branch**: Create from `dev-branch`
 2. **Development**: Build feature with wireframe reference
 3. **Testing**: Test on iOS and Android
 4. **PR Review**: Submit for code review
-5. **Merge**: Merge to `main` after approval
+5. **Merge**: Merge to `dev-branch` after approval
 
 ## 📝 Code Style
 
@@ -259,6 +259,6 @@ Proprietary - All rights reserved
 
 ## 👥 Team
 
-Built for production-grade mobile gaming experience.
+Built for best in class whot gaming experience.
 
 ---
